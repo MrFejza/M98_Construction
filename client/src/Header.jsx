@@ -8,7 +8,6 @@ const navigation = [
   { name: 'About', href: '/about', current: false },
   { name: 'Services', href: '/services', current: false },
   { name: 'Projects', href: '/projects', current: false },
-  { name: 'Upcoming Projects', href: '/upcomingProjects', current: false },
   { name: 'Contact', href: '/contact', current: false },
 ];
 
@@ -17,6 +16,7 @@ function classNames(...classes) {
 }
 
 const Header = () => {
+  const isAuth = localStorage.getItem('isAuth');
   return (
     <Disclosure as="nav" className="bg-gray-800">
       {({ open }) => (
