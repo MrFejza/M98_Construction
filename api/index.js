@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import userRoutes from './routes/user.route.js';
 import authRoutes from './routes/auth.route.js';
-import uploadRoutes from './routes/upload.route.js';
 import projectRoutes from './routes/projects.route.js'; // Import the project routes
 import cors from 'cors';
 import path from 'path';
@@ -30,11 +29,10 @@ mongoose.connect(process.env.MONGO)
 
 app.use('/api/user', userRoutes);
 app.use('/api/auth', authRoutes);
-app.use('/api/uploads', uploadRoutes);
-app.use('/api/projects', projectRoutes); // Use project routes
+app.use('/api/projects', projectRoutes);
 
+// Serve static files from the "uploads" directory
 const __dirname = path.resolve();
-
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use((err, req, res, next) => {

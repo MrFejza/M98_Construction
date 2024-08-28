@@ -15,7 +15,13 @@ const Upload = () => {
   const [endDate, setEndDate] = useState('');
   const [budget, setBudget] = useState('');
   const [image, setImage] = useState(null);
- 
+
+  // Status options
+  const statusOptions = [
+    "Perfunduar",
+    "Duke u Ndertuar",
+    "Fillojme se shpejti"
+  ];
 
   // Handler for project creation
   const handleProjectCreation = async () => {
@@ -31,7 +37,6 @@ const Upload = () => {
     formData.append('budget', budget);
 
     if (image) formData.append('image', image);
-   
 
     try {
       const response = await axios.post('/api/projects', formData, {
@@ -39,7 +44,17 @@ const Upload = () => {
         withCredentials: true
       });
       toast.success(response.data.message || 'Project created successfully');
-      navigate('/dashboard/projects'); // Redirect after successful creation
+      window.alert('Project created successfully');
+      setTitle('');
+      setDescription('');
+      setLocation('');
+      setClient('');
+      setStatus('');
+      setStartDate('');
+      setEndDate('');
+      setBudget('');
+      setImage(null);
+
     } catch (error) {
       toast.error(error?.response?.data?.message || error.message);
     }
@@ -54,7 +69,7 @@ const Upload = () => {
   return (
     <>
       <Meta title={`${title || "New Project"} - Construction Company`} />
-      <div className="flex justify-center items-center bg-gray-100 min-h-screen ml-12 sm:ml-14 py-10">
+      <div className="flex justify-center items-center bg-gray-100 min-h-screen py-10">
         <div className="container mx-auto px-4 mb-8">
           <h1 className="text-4xl font-bold text-center text-primary-deep mb-8">Add New Project</h1>
           <div className="bg-white p-4 sm:p-8 rounded-lg shadow-lg max-w-xl mx-auto">
@@ -103,13 +118,17 @@ const Upload = () => {
               </div>
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2">Status</label>
-                <input
-                  type="text"
-                  placeholder="Enter project status"
+                <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
                   className="w-full p-3 border rounded-md focus:outline-none focus:border-primary-deep"
-                />
+                  required
+                >
+                  <option value="" disabled>Select status</option>
+                  {statusOptions.map((option) => (
+                    <option key={option} value={option}>{option}</option>
+                  ))}
+                </select>
               </div>
               <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2">Start Date</label>

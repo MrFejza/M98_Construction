@@ -1,6 +1,8 @@
 import React from 'react';
 import { Disclosure } from '@headlessui/react';
-import { Bars3Icon, XMarkIcon, BellIcon } from '@heroicons/react/24/outline';
+// Updated import for Heroicons v2
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';  // Import icons for menu open/close
+import { useNavigate } from 'react-router-dom';
 import Logo from './assets/Logo.png';
 
 const navigation = [
@@ -15,8 +17,31 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
 }
 
-const Header = () => {
+function LogoutButton() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('isAuth');
+    localStorage.removeItem('isAdmin');
+    navigate('/');  // Redirect to the homepage
+  };
+
   const isAuth = localStorage.getItem('isAuth');
+  const isAdmin = localStorage.getItem('isAdmin');
+
+  if (isAuth && isAdmin) {
+    return (
+      <button onClick={handleLogout} className=" text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">
+        Logout
+      </button>
+    );
+  }
+
+  return null;
+}
+
+const Header = () => {
   return (
     <Disclosure as="nav" className="bg-gray-800">
       {({ open }) => (
@@ -27,6 +52,7 @@ const Header = () => {
                 {/* Mobile menu button */}
                 <Disclosure.Button className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
                   <span className="sr-only">Open main menu</span>
+                  {/* Updated icon for menu open/close */}
                   {open ? (
                     <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
                   ) : (
@@ -57,13 +83,13 @@ const Header = () => {
                 </div>
               </div>
               <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-            
+                <LogoutButton />
               </div>
             </div>
           </div>
 
           <Disclosure.Panel className="sm:hidden">
-            <div className="space-y-1 px-2 pt-2 pb-3">
+            <div className="space-y-1 px-2 pb-3 pt-2">
               {navigation.map((item) => (
                 <Disclosure.Button
                   key={item.name}

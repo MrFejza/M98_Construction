@@ -1,3 +1,4 @@
+
 import Project from '../models/project.model.js';
 
 // Create a new project
@@ -24,8 +25,8 @@ export const createProject = async (req) => {
     
     return newProject;
   } catch (error) {
-    console.error('Error creating project:', error);
-    throw error; // Rethrow error to be caught by the route handler
+    console.error('Error details:', error); // Add more detailed logging
+    res.status(500).json({ message: 'Error creating project', error: error.message });
   }
 };
 
