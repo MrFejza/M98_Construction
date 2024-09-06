@@ -10,7 +10,6 @@ import Shemsia from "./pages/Shemsia";
 import Upload from "./pages/Upload";
 import Edit from "./pages/Edit";
 import Information from "./pages/Information";
-import AddPhoto from "./pages/AddPhoto";
 import Header from "./Header";
 import PrivateRoutes from "./PrivateRoutes";
 import Footer from "./Footer";
@@ -37,7 +36,6 @@ const AppContent = () => {
         <Route element={<PrivateRoutes adminOnly={true} />}>
           <Route path="/upload" element={<Upload />} />
           <Route path="/edit/:_id" element={<Edit />} />
-          <Route path="/edit/:_id/add-photo" element={<AddPhoto />} />
 
         </Route>
 

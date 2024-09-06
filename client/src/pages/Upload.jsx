@@ -14,7 +14,7 @@ const Upload = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [budget, setBudget] = useState('');
-  const [image, setImage] = useState(null);
+  const [selectedFiles, setSelectedFiles] = useState([]); // Handles multiple files
 
   // Status options
   const statusOptions = [
@@ -23,10 +23,16 @@ const Upload = () => {
     "Fillojme se shpejti"
   ];
 
+  // Define the handleFileChange function
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    setSelectedFiles((prevFiles) => [...prevFiles, ...files]);
+  };
+
   // Handler for project creation
   const handleProjectCreation = async () => {
     const formData = new FormData();
-    
+
     formData.append('title', title);
     formData.append('description', description);
     formData.append('location', location);
@@ -36,15 +42,18 @@ const Upload = () => {
     formData.append('endDate', endDate);
     formData.append('budget', budget);
 
-    if (image) formData.append('image', image);
+    // Append selected images
+    selectedFiles.forEach((file) => {
+      formData.append('image', file); // Ensure 'photos' matches multer's field name
+    });
 
     try {
-      const response = await axios.post('/api/projects', formData, {
+      const response = await axios.post('/api/projects/', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
-        withCredentials: true
+        withCredentials: true,
       });
       toast.success(response.data.message || 'Project created successfully');
-      window.alert('Project created successfully');
+      // Reset form fields after successful upload
       setTitle('');
       setDescription('');
       setLocation('');
@@ -53,8 +62,7 @@ const Upload = () => {
       setStartDate('');
       setEndDate('');
       setBudget('');
-      setImage(null);
-
+      setSelectedFiles([]);
     } catch (error) {
       toast.error(error?.response?.data?.message || error.message);
     }
@@ -158,19 +166,34 @@ const Upload = () => {
                   className="w-full p-3 border rounded-md focus:outline-none focus:border-primary-deep"
                 />
               </div>
-              <div className="mb-4">
-                <label className="block text-gray-700 text-sm font-bold mb-2">Image</label>
+   {/* File input for multiple images */}
+   <div className="mb-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2">Images</label>
                 <input
                   type="file"
-                  onChange={(e) => setImage(e.target.files[0])}
+                  onChange={handleFileChange}
+                  multiple
                   className="w-full p-3 border rounded-md focus:outline-none focus:border-primary-deep mt-2"
                 />
-                {image && <img
-                  src={URL.createObjectURL(image)}
-                  className="w-full p-3 border rounded-md focus:outline-none focus:border-primary-deep bg-gray-200"
-                  alt="Preview"
-                />}
               </div>
+
+              {/* Display selected image previews */}
+              {selectedFiles.length > 0 && (
+                <div className="mb-4">
+                  <h2 className="text-lg font-semibold mb-2">Selected Photos:</h2>
+                  <div className="grid grid-cols-3 gap-4">
+                    {selectedFiles.map((file, index) => (
+                      <div key={index} className="relative">
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt={`preview-${index}`}
+                          className="w-full h-auto rounded-md border border-gray-300"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
               
               <div className="text-center">
                 <button type="submit" className="bg-gray-500 w-full text-white font-bold py-3 px-6 rounded-md hover:bg-primary-dark transition-colors">

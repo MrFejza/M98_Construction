@@ -14,69 +14,103 @@ const Edit = () => {
     startDate: '',
     endDate: '',
     budget: '',
-    image: null,
+    image: [], // Updated from images to image
   });
-  const [newImage, setNewImage] = useState(null); // State for the new image
-
+  const [newImages, setNewImages] = useState([]); // State for new images
+  // Fetch project data by ID
   useEffect(() => {
-    axios.get(`/api/projects/${_id}`)
-      .then(res => {
-        setProject(res.data);
+    axios
+      .get(`/api/projects/${_id}`)
+      .then((res) => {
+        setProject({
+          ...res.data,
+          image: res.data.image || [], // Ensure image is always an array
+        });
       })
-      .catch(err => console.log('Error fetching project:', err));
+      .catch((err) => console.log('Error fetching project:', err));
   }, [_id]);
 
+  // Handle input changes for form fields
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setProject(prevState => ({
+    setProject((prevState) => ({
       ...prevState,
-      [name]: value
+      [name]: value,
     }));
   };
 
-  const handleFileChange = (e) => {
-    setNewImage(e.target.files[0]); // Update the new image state
-    setProject(prevState => ({
-      ...prevState,
-      image: e.target.files[0]
-    }));
-  };
+  // Handle file input changes
+  // const handleFileChange = (e) => {
+  //   const files = Array.from(e.target.files); // Handle multiple files
+  //   setNewImages((prevImages) => [...prevImages, ...files]); // Add new images to existing ones
+  // };
 
+// Handle file input changes
+  const handleFileChange =(e)=>{
+
+    //console.log("project-----",project);
+    //console.log("image-----",e.target.files);
+
+    setProject((prevState)=>{
+      return{
+        ...prevState,
+        image:[e.target.files]
+      }
+    });
+
+    const files = Array.from(e.target.files); 
+    setNewImages([...files]);
+  }
+
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const isConfirmed = window.confirm("Are you sure you want to update this project?");
-    if (!isConfirmed) {
-      return;
-    }
-
+    // console.log("project-----",project);
+  
     try {
       const formData = new FormData();
-      for (let key in project) {
-        formData.append(key, project[key]);
+      formData.append('title', project.title);
+      formData.append('description', project.description);
+      formData.append('location', project.location);
+      formData.append('client', project.client);
+      formData.append('status', project.status);
+      formData.append('startDate', project.startDate);
+      formData.append('endDate', project.endDate);
+      formData.append('budget', project.budget);
+      // formData.append('image',newImages);
+      newImages.forEach((file) => {
+        formData.append('image', file);
+      })
+
+
+      //console.log("result-----",newImages[0]);
+      const config = {     
+        headers: { 'Content-type': 'multipart/form-data' }
       }
+      const result =  await axios.put(`/api/projects/${_id}`, formData,config);
+      console.log("result-----",result);
 
-      await axios.put(`/api/projects/${_id}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
 
-      navigate('/projects');
     } catch (error) {
-      console.error('Error updating project:', error);
+      console.error('Error updating project:', error.response ? error.response.data : error.message);
     }
   };
+  
 
   return (
     <div className="flex justify-center items-center bg-gray-100 min-h-screen py-10">
       <div className="container mx-auto px-4 mb-8">
-        <h1 className="text-4xl font-bold text-center text-primary-deep mb-8">Edit Project</h1>
+        <h1 className="text-4xl font-bold text-center text-primary-deep mb-8">
+          Edit Project
+        </h1>
         <div className="bg-white p-4 sm:p-8 rounded-lg shadow-lg max-w-xl mx-auto">
           <form onSubmit={handleSubmit}>
             {/* Title */}
             <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2">Title</label>
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Title
+              </label>
               <input
                 type="text"
                 name="title"
@@ -90,7 +124,9 @@ const Edit = () => {
 
             {/* Description */}
             <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2">Description</label>
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Description
+              </label>
               <textarea
                 name="description"
                 value={project.description}
@@ -104,7 +140,9 @@ const Edit = () => {
 
             {/* Location */}
             <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2">Location</label>
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Location
+              </label>
               <input
                 type="text"
                 name="location"
@@ -117,7 +155,9 @@ const Edit = () => {
 
             {/* Client */}
             <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2">Client</label>
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Client
+              </label>
               <input
                 type="text"
                 name="client"
@@ -130,7 +170,9 @@ const Edit = () => {
 
             {/* Status (Enumeration) */}
             <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2">Status</label>
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Status
+              </label>
               <select
                 name="status"
                 value={project.status}
@@ -147,7 +189,9 @@ const Edit = () => {
 
             {/* Start Date */}
             <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2">Start Date</label>
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Start Date
+              </label>
               <input
                 type="date"
                 name="startDate"
@@ -159,7 +203,9 @@ const Edit = () => {
 
             {/* End Date */}
             <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2">End Date</label>
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                End Date
+              </label>
               <input
                 type="date"
                 name="endDate"
@@ -171,7 +217,9 @@ const Edit = () => {
 
             {/* Budget */}
             <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2">Budget</label>
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Budget
+              </label>
               <input
                 type="number"
                 name="budget"
@@ -184,36 +232,51 @@ const Edit = () => {
 
             {/* Image Upload */}
             <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2">Image</label>
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Images
+              </label>
               <input
                 type="file"
                 name="image"
                 onChange={handleFileChange}
+                multiple // Allow multiple file uploads
                 className="w-full p-3 border rounded-md focus:outline-none focus:border-primary-deep mt-2"
               />
-              {newImage ? (
-                <img
-                  src={URL.createObjectURL(newImage)}
-                  className="w-full p-3 border rounded-md bg-gray-200 mt-2"
-                  alt="Project"
-                />
-              ) : (
-                project.image && typeof project.image === 'string' && (
+              {/* Display selected or existing images */}
+              <div className="mt-2">
+                <div className="grid grid-cols-3 gap-4">
+                {project.image.map((img, index) => (
                   <img
-                    src={`http://localhost:3000/${project.image}`} // Update this URL to match your server's URL structure
-                    className="w-full p-3 border rounded-md bg-gray-200 mt-2"
-                    alt="Project"
+                    key={`existing-${index}`}
+                    src={`http://localhost:3000/${img}`} // Corrected variable name
+                    className="w-full h-auto rounded-md border border-gray-300"
+                    alt={`Existing Project ${index}`}
                   />
-                )
-              )}
+                ))}
+                {newImages.map((file, index) => (
+                  <img
+                    key={`new-${index}`}
+                    src={URL.createObjectURL(file)} // Display the new images
+                    className="w-full h-auto rounded-md border border-gray-300"
+                    alt={`New Project ${index}`}
+                  />
+                ))}
+                </div>
+              </div>
             </div>
 
             {/* Submit & Cancel Buttons */}
             <div className="text-center">
-              <button type="submit" className="bg-gray-500 hover:bg-gray-700 w-full text-white font-bold py-3 px-6 rounded-md transition-colors">
+              <button
+                type="submit"
+                className="bg-gray-500 hover:bg-gray-700 w-full text-white font-bold py-3 px-6 rounded-md transition-colors"
+              >
                 Update Project
               </button>
-              <Link to="/dashboard/projects" className="bg-gray-500 w-full text-white font-bold py-3 px-6 rounded-md hover:bg-gray-700 transition-colors mt-2 inline-block">
+              <Link
+                to="/dashboard/projects"
+                className="bg-gray-500 w-full text-white font-bold py-3 px-6 rounded-md hover:bg-gray-700 transition-colors mt-2 inline-block"
+              >
                 Cancel
               </Link>
             </div>

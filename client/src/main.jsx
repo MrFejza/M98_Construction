@@ -10,6 +10,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
       <HelmetProvider>
        <App />
-      </HelmetProvider>,
-  </React.StrictMode>,
+      </HelmetProvider>
+  </React.StrictMode>
 );

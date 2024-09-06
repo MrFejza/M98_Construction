@@ -11,9 +11,9 @@ const PrivateRoutes = ({ adminOnly }) => {
   const isAdmin = localStorage.getItem('isAdmin') === 'true';
   const hasToken = getToken();
 
-  console.log('isAuth:', isAuth);
-  console.log('isAdmin:', isAdmin);
-  console.log('hasToken:', hasToken);
+  // console.log('isAuth:', isAuth);
+  // console.log('isAdmin:', isAdmin);
+  // console.log('hasToken:', hasToken);
 
   // If authenticated and has token or is not admin-only, allow access
   if (isAuth && hasToken) {
@@ -21,7 +21,7 @@ const PrivateRoutes = ({ adminOnly }) => {
       console.log('Redirecting to /admin because user is not admin');
       return <Navigate to='/admin' />;
     }
-    console.log('Access granted, rendering Outlet');
+    //console.log('Access granted, rendering Outlet');
     return <Outlet />;
   }
 

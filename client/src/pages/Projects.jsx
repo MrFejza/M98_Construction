@@ -82,27 +82,47 @@ const Projects = () => {
       <div className="container mx-auto px-10 py-8">
         <h1 className="text-4xl font-bold text-center mb-8">Projects</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {currentProjects.map(project => (
-            <div key={project._id} className="bg-white p-4 rounded-lg shadow-lg">
-              <Link to={`/information/${project._id}`}>
-                <img
-                  src={`http://localhost:3000/${project.image}`}
-                  alt={project.title ?? 'image'}
-                  className="w-full h-48 object-cover rounded-md mb-4"
-                />
-                <h2 className="text-xl font-bold mb-2">{project.title}</h2>
-                <p className="text-gray-600 mb-4">{project.description}</p>
-                <p><strong>Location:</strong> {project.location}</p>
-                <p><strong>Client:</strong> {project.client}</p>
-                <p><strong>Status:</strong> {project.status}</p>
-                <p><strong>Start Date:</strong> {new Date(project.startDate).toLocaleDateString()}</p>
-                <p><strong>End Date:</strong> {new Date(project.endDate).toLocaleDateString()}</p>
-                <p><strong>Budget:</strong> {new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR' }).format(project.budget)}</p>
-              </Link>
-              {editProject(project)}
-              {showDeleteButton(project)}
-            </div>
-          ))}
+        {currentProjects.map((project) => (
+  <div key={project._id} className="bg-white p-4 rounded-lg shadow-lg">
+    <Link to={`/information/${project._id}`}>
+      <img
+        src={
+          project.image && Array.isArray(project.image) && project.image.length > 0
+            ? `http://localhost:3000/${project.image[0]}` // Access the first image
+            : 'default-image-path.jpg' // Optional: Fallback if no image is available
+        }
+        alt={project.title ?? 'Project Image'}
+        className="w-full h-48 object-cover rounded-md mb-4"
+      />
+      <h2 className="text-xl font-bold mb-2">{project.title}</h2>
+      <p className="text-gray-600 mb-4">{project.description}</p>
+      <p>
+        <strong>Location:</strong> {project.location}
+      </p>
+      <p>
+        <strong>Client:</strong> {project.client}
+      </p>
+      <p>
+        <strong>Status:</strong> {project.status}
+      </p>
+      <p>
+        <strong>Start Date:</strong> {new Date(project.startDate).toLocaleDateString()}
+      </p>
+      <p>
+        <strong>End Date:</strong> {new Date(project.endDate).toLocaleDateString()}
+      </p>
+      <p>
+        <strong>Budget:</strong>{' '}
+        {new Intl.NumberFormat('en-IE', { style: 'currency', currency: 'EUR' }).format(
+          project.budget
+        )}
+      </p>
+    </Link>
+    {editProject(project)}
+    {showDeleteButton(project)}
+  </div>
+))}
+
         </div>
         <div className="flex justify-center mt-8">
           {currentPage > 1 && (

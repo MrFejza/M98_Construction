@@ -35,8 +35,8 @@ const projectSchema = new mongoose.Schema({
     default: ''
   },
   image: {
-    type: String,
-    default: ''
+    type: [String],
+    default: []
   }
 }, {
   timestamps: true // This will automatically add createdAt and updatedAt fields
